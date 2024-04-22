@@ -1,9 +1,16 @@
-<<character A>>
-<<character You>>
-title: Test
+title: mini_historia_fulbo
+tags: 
+initBg: city-bg.jpg
+initCh: none
 ---
-A: Texto de pruebaTexto de pruebTexto de pruebTexto de pruebTexto de pruebTexto de pruebTexto de pruebTexto de pruebTexto de pruebTexto de prueb
-You: Lorem Ipsum Dolor sit amet Lorem Ipsum Do Lorem Ipsum Dolor sit amet Lorem Ipsum Dolor sit amet Lorem Ipsum Dolor sit ametLorem Ipsum Dolor sit ametlor sit amet Lorem Ipsum Dolor sit amet Lorem Ipsum Dolor sit amet Lorem Ipsum Dolor sit amet
-A: texto largo texto largotexto largotexto largotexto largotexto largotexto largotexto largotexto largotexto largo
-You: Test.
+Era una mañana tranquila y relajante, me habia despertado a las 9\:00 am, que dia más cansado. \
+No tengo idea que hacer ahora, solo me puse a caminar por las calles sin rumbos, tal vez debería desayunar algo. \
+<<characterAppear "character_A.png">>
+De repente veo a Pepe a la vuelta de la esquina, al verme me mira con una cara asustada\
+Pepe: Oe mano! te enteraste?? #surprise
+You: ¿Enterarme de que? ¿Ocurrió algo malo?
+Pepe: GOLEARON A LAS CHIVAS #scream
+You: NO PUEDE SER. #badFeel
+Habian goleado a las chivas... mi equipo de futbol favorito.
+<<fadeInEffect 3.5>>
 ===
