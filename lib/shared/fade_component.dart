@@ -35,6 +35,7 @@ class FadeComponent extends RectangleComponent implements OpacityProvider{
       remove(blockLayer);
     }
       afterFunc();
+      removeWhere((component) => component is OpacityEffect);
     });
   }
 }
