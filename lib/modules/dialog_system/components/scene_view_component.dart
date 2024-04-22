@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
 import 'package:flame/input.dart';
 import 'package:jenny/jenny.dart';
 
@@ -13,9 +13,12 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   Completer<void> _forwardCompleter = Completer();
   late DialoguePerCharText textContainer;
   late DialogueLine publicLine;
+  late final TagAction tagAction;
 
   @override
   FutureOr<void> onLoad() {
+
+    tagAction = TagAction(this);
     boxTextContainer = SpriteComponent(sprite: world.boxTextContainer)
       ..position.y = 285;
 
@@ -65,11 +68,9 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
   Future<void> _advance(DialogueLine line) async{
 
-    if(line.tags.contains("#scream")){
-      final shake = MoveEffect.by(Vector2(0,-3), InfiniteEffectController(ZigzagEffectController(period: 0.2)));
-      final chSpr = children.query<SpriteComponent>().firstWhere((element) => element.key == ComponentKey.named('ch_${line.character?.name}'));
-      chSpr.add(shake);
-      Future.delayed(const Duration(seconds: 3)).then((value) => shake.pause());
+    final tags = line.tags;
+    if(tags.isNotEmpty){
+      tagAction.executeTags(tags, children: children, line: line);
     }
 
     final characterName = line.character?.name ?? '';

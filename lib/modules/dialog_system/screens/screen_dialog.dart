@@ -24,10 +24,24 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
     gameRef.cam.viewport.add(fader);
     fader.outEffect(() {});
 
+    _loadCommands();
+
     boxTextContainer = await gameRef.loadSprite('dialogs/default_dialog_container.png');
     sceneViewComponent = SceneViewComponent();
     String startDialog = await rootBundle.loadString('assets/yarn/start.yarn');
 
+    yarnProject.parse(startDialog);
+    var dialogueRunner = DialogueRunner(yarnProject: yarnProject, dialogueViews: [sceneViewComponent]);
+    dialogueRunner.startDialogue('mini_historia_fulbo');
+
+    add(sceneViewComponent);
+
+    return super.onLoad();
+  }
+  
+  void _loadCommands(){
+    
+    //* characterAppear
     yarnProject.commands.addCommand4("characterAppear", (String chName, String fileName, String ext, String pos) async {
       final SpriteComponent character1 = SpriteComponent(
         key: ComponentKey.named('ch_$chName'),
@@ -44,12 +58,5 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
       character1.priority = 0;
     });
 
-    yarnProject.parse(startDialog);
-    var dialogueRunner = DialogueRunner(yarnProject: yarnProject, dialogueViews: [sceneViewComponent]);
-    dialogueRunner.startDialogue('mini_historia_fulbo');
-
-    add(sceneViewComponent);
-
-    return super.onLoad();
   }
 }
