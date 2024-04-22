@@ -33,65 +33,92 @@ class ScreenMainMenu extends World with HasGameRef<VisualNovel>{
     gameRef.cam.viewport.add(_fader);
     _fader.outEffect(() { });
 
+    final continueGame = MainVNButton(
+      "CONTINUAR",
+      size: buttonSize,
+      position: buttonPos,
+      onAction: onLoadGame,
+      isLocked: true
+    );
+
     final play = MainVNButton(
       "COMENZAR",
       size: buttonSize,
-      position: buttonPos,
-      onReleased: () {
-        final screenDialog = ScreenDialog();
-        _fader.inEffect(() async {
-          gameRef.remove(this);
-          await gameRef.add(screenDialog);
-          gameRef.cam.world = screenDialog;
-          gameRef.cam.viewport.remove(_fader);
-        });
-      },
+      position: Vector2(buttonPos.x, continueGame.position.y + spacing),
+      onAction: onStartGame
     );
 
     final loadSaved = MainVNButton(
       "CARGAR PARTIDA",
       size: buttonSize,
       position: Vector2(buttonPos.x, play.position.y + spacing),
-      onReleased: () {
-        print("cargando partida");
-      },
+      onAction: onLoadData
     );
 
     final scenas = MainVNButton(
       "ESCENAS",
       size: buttonSize,
       position: Vector2(buttonPos.x, loadSaved.position.y + spacing),
-      onReleased: () {
-        print("mostrando escenas");
-      },
+      onAction: onScenes
     );
 
     final settings = MainVNButton(
       "CONFIGURACIONES",
       size: buttonSize,
       position: Vector2(buttonPos.x, scenas.position.y + spacing),
-      onReleased: () {
-        print("configurando");
-      },
+      onAction: onPreferences
     );
-
 
     final login = MainVNButton(
       "LOGIN",
       size: Vector2(100,30),
       position: Vector2(size.x - 80, size.y - 30),
-      onReleased: () {
-        print("logear");
-      },
+      onAction: onLogin
     );
 
     add(bg);
-    addAll([play, loadSaved, scenas, settings, login]);
+    addAll([continueGame, play, loadSaved, scenas, settings, login]);
     
     return super.onLoad();
   }
+
+  void onStartGame(){
+    final screenDialog = ScreenDialog();
+    _fader.inEffect(() async {
+      gameRef.remove(this);
+      await gameRef.add(screenDialog);
+      gameRef.cam.world = screenDialog;
+      gameRef.cam.viewport.remove(_fader);
+    });
+  }
+
+  void onLoadGame(){
+    //* Código para cargar el guardado más reciente
+    debugPrint("Cargando partida");
+  }
+
+  void onLoadData(){
+    //* Codigo para cargar partida
+    debugPrint("UI para cargar partida");
+  }
+
+  void onScenes(){
+    //* Codigo para ver las escenas
+    debugPrint("UI de escenas");
+  }
+
+  void onPreferences(){
+    //* Codigo para las configuraciones
+    debugPrint("UI de configuraciones");
+  }
+
+  void onLogin(){
+    //* Codigo para el login
+    debugPrint("UI de login");
+  }
 }
 
+// TODO: Agregar algun efecto para justificar el uso de Parallax en vez de una simple imagen.
 class Background extends ParallaxComponent<VisualNovel>{
 
   final String path;

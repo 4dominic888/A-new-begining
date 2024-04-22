@@ -35,10 +35,14 @@ class ButtonBackground extends PositionComponent with HasAncestor<MainVNButton>{
 class MainVNButton extends ButtonComponent{
   
   final String text;
+  bool isLocked;
+  
+  void Function() onAction;
 
-  MainVNButton(this.text, {super.size, super.onReleased, super.position}) : super(
-    button: ButtonBackground(const Color.fromRGBO(255, 255, 255, 0.85)),
-    buttonDown: ButtonBackground(const Color.fromRGBO(226, 226, 226, 0.85)),
+  MainVNButton(this.text, {super.size, required this.onAction, super.position, this.isLocked = false}) : super(
+    button: !isLocked ? ButtonBackground(const Color.fromRGBO(255, 255, 255, 0.85)) : ButtonBackground(const Color.fromRGBO(200, 200, 200, 0.85)),
+    buttonDown: !isLocked ? ButtonBackground(const Color.fromRGBO(220, 220, 220, 0.85)) : null,
+    onReleased: !isLocked ? onAction : null,
     children: [
       TextComponent(
         text: text,
@@ -46,7 +50,7 @@ class MainVNButton extends ButtonComponent{
           style: TextStyle(
             fontSize: 0.5* size!.y,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: !isLocked ? Colors.black : Colors.grey.shade700,
             shadows: [
               Shadow(blurRadius: 17, offset: const Offset(0.5, 0.5), color: Colors.grey.shade400)
             ]
