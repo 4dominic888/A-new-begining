@@ -24,6 +24,6 @@ class VisualNovel extends FlameGame{
 
   @override
   Color backgroundColor() {
-    return Colors.grey.shade900;
+    return Colors.black;
   }
 }
