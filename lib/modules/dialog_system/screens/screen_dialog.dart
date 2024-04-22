@@ -9,8 +9,6 @@ import 'package:jenny/jenny.dart';
 
 class ScreenDialog extends World with HasGameRef<VisualNovel>{
 
-  late final Sprite bg;
-  late final Sprite character1;
   late final Sprite boxTextContainer;
   YarnProject yarnProject = YarnProject();
   late final SceneViewComponent sceneViewComponent;
@@ -18,24 +16,37 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
   @override
   FutureOr<void> onLoad() async {
 
-    final _fader = FadeComponent(
+    final fader = FadeComponent(
       size: gameRef.cam.viewport.virtualSize,
       color: Colors.black,
       time: 1.7
     );
-    gameRef.cam.viewport.add(_fader);
-    _fader.outEffect(() { });    
+    gameRef.cam.viewport.add(fader);
+    fader.outEffect(() {});
 
-    bg = await gameRef.loadSprite('bg/city-bg.jpg');
-    character1 = await gameRef.loadSprite('characters/character_A.png');
     boxTextContainer = await gameRef.loadSprite('dialogs/default_dialog_container.png');
     sceneViewComponent = SceneViewComponent();
     String startDialog = await rootBundle.loadString('assets/yarn/start.yarn');
 
+    yarnProject.commands.addCommand4("characterAppear", (String chName, String fileName, String ext, String pos) async {
+      final SpriteComponent character1 = SpriteComponent(
+        key: ComponentKey.named('ch_$chName'),
+        sprite: await gameRef.loadSprite('characters/$fileName.$ext')
+      );
+      character1.size /= character1.size.y / gameRef.size.y;
+      switch (pos) {
+        case "center": character1.position.x = (gameRef.size.x *0.5) - 160; break;
+        case "left": character1.position.x = (gameRef.size.x *0.25) - 160; break;
+        case "right": character1.position.x = (gameRef.size.x *0.75) - 160; break;
+      }
+
+      sceneViewComponent.add(character1);
+      character1.priority = 0;
+    });
 
     yarnProject.parse(startDialog);
     var dialogueRunner = DialogueRunner(yarnProject: yarnProject, dialogueViews: [sceneViewComponent]);
-    dialogueRunner.startDialogue('Test');
+    dialogueRunner.startDialogue('mini_historia_fulbo');
 
     add(sceneViewComponent);
 
