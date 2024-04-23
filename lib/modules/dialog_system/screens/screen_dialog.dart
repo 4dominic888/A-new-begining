@@ -10,6 +10,7 @@ import 'package:jenny/jenny.dart';
 class ScreenDialog extends World with HasGameRef<VisualNovel>{
 
   late final Sprite boxTextContainer;
+  late final Sprite boxTitleContainer;
   YarnProject yarnProject = YarnProject();
   late final SceneViewComponent sceneViewComponent;
 
@@ -27,6 +28,7 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
     _loadCommands();
 
     boxTextContainer = await gameRef.loadSprite('dialogs/default_dialog_container.png');
+    boxTitleContainer = await gameRef.loadSprite('dialogs/default_dialog_title.png');
     sceneViewComponent = SceneViewComponent();
     String startDialog = await rootBundle.loadString('assets/yarn/start.yarn');
 
