@@ -12,7 +12,8 @@ class DialoguePerCharText extends TextBoxComponent{
     position: Vector2(100, game.size.y -115),
     textRenderer: TextPaint(style: const TextStyle(
       fontSize: 18,
-      fontWeight: FontWeight.w300
+      fontWeight: FontWeight.w300,
+      shadows: [Shadow(color: Colors.black, blurRadius: 20.5, offset: Offset(0.1, 0.1))]
     )),
     boxConfig: TextBoxConfig(
       growingBox: true,
