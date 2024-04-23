@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 
 final naviKey = GlobalKey<NavigatorState>();
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Flame.device.fullScreen();
   await Flame.device.setLandscape();
   final game = VisualNovel();
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: Scaffold(
       body: Stack(
         children: [
