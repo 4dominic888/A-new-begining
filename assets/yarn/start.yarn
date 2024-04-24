@@ -4,6 +4,7 @@ title: mini_historia_fulbo
 tags:
 initBg: city-bg.jpg
 initCh: none
+initSound: bubble_city_blues.mp3
 ---
 Era una mañana tranquila y relajante, me había despertado a las 9\:00 am, que día más cansado.
 No tengo idea de que hacer ahora, solo me puse a caminar por las calles sin rumbo, tal vez debería desayunar algo.
@@ -11,11 +12,12 @@ No tengo idea de que hacer ahora, solo me puse a caminar por las calles sin rumb
 De repente veo a Pepe a la vuelta de la esquina, al verme me mira con una cara asustada.
 Pepe: Oe mano! te enteraste?? #surprise
 Tu: ¿Enterarme de que? ¿Ocurrió algo malo?
-Pepe: GOLEARON A LAS CHIVAS. #scream
+Pepe: GOLEARON A LAS CHIVAS. #scream #pause
 Tu: NO PUEDE SER. #badFeel
 Habian goleado a las chivas... mi equipo de futbol favorito.
 ...
 <<changueBg "sliding-curtain" "cafeteria.jpg">>
+<<changueSound "coffee-shop.mp3">>
 <<wait 1.5>>
 Tu: Como es que golearon a las chivas.
 Habiamos ido a una cafetería cercana a hablarlo con más calma.

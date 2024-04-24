@@ -4,6 +4,7 @@ import 'package:a_new_begin_again_vn/shared/fade_component.dart';
 import 'package:a_new_begin_again_vn/visual_novel.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,7 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
 
   @override
   FutureOr<void> onLoad() async {
-
+    FlameAudio.bgm.initialize();
     final fader = FadeComponent(
       size: gameRef.cam.viewport.virtualSize,
       color: Colors.black,
@@ -43,6 +44,12 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
     add(sceneViewComponent);
 
     return super.onLoad();
+  }
+
+  @override
+  void onRemove() {
+    FlameAudio.bgm.dispose();
+    super.onRemove();
   }
   
   void _loadCommands(){
@@ -82,5 +89,9 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
       }
     });
 
+    //* changeSound
+    yarnProject.commands.addCommand1("changueSound", (String fileName) {
+      FlameAudio.bgm.play(fileName);
+    });
   }
 }

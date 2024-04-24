@@ -7,6 +7,7 @@ import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:jenny/jenny.dart';
 
@@ -22,7 +23,6 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
   @override
   FutureOr<void> onLoad() {
-
     tagAction = TagAction(this);
     boxTextContainer = SpriteComponent(sprite: world.boxTextContainer)
       ..position.y = 285;
@@ -68,6 +68,10 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   @override
   FutureOr<void> onNodeStart(Node node) async {
     final bg = SpriteComponent(key: ComponentKey.named('bg'), sprite: await world.gameRef.loadSprite('bg/${node.tags["initBg"]}'));
+    String? audio = node.tags["initSound"];
+    if(audio != "none" && audio != null && !FlameAudio.bgm.isPlaying){
+      FlameAudio.bgm.play(audio);
+    }
     bg.size = world.gameRef.size;
     add(bg..priority = -1);
     return super.onNodeStart(node);
