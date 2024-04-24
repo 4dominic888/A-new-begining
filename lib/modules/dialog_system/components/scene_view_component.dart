@@ -68,6 +68,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   @override
   FutureOr<void> onNodeStart(Node node) async {
     final bg = SpriteComponent(key: ComponentKey.named('bg'), sprite: await world.gameRef.loadSprite('bg/${node.tags["initBg"]}'));
+    bg.size = world.gameRef.size;
     add(bg..priority = -1);
     return super.onNodeStart(node);
   }
