@@ -1,35 +1,51 @@
 import 'dart:async';
 
+import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
+import 'package:a_new_begin_again_vn/modules/dialog_system/components/box_title_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
+import 'package:flame_svg/flame_svg.dart';
 import 'package:jenny/jenny.dart';
 
 class SceneViewComponent extends PositionComponent with DialogueView, HasWorldReference<ScreenDialog>{
-  late SpriteComponent bg;
-  late SpriteComponent character1;
   late SpriteComponent boxTextContainer;
+  late BoxTitleContainer boxTitleContainer;
+  late SvgComponent continueIndicator;
   late final ButtonComponent forwardNextButtonComponent;
   Completer<void> _forwardCompleter = Completer();
   late DialoguePerCharText textContainer;
   late DialogueLine publicLine;
+  late final TagAction tagAction;
 
   @override
   FutureOr<void> onLoad() {
-    bg = SpriteComponent(sprite: world.bg);
-    character1 = SpriteComponent(sprite: world.character1)
-      ..size /=2
-      ..position.y = -38;
-
+    tagAction = TagAction(this);
     boxTextContainer = SpriteComponent(sprite: world.boxTextContainer)
       ..position.y = 285;
 
+    boxTitleContainer = BoxTitleContainer(key: ComponentKey.named("boxTitle"), "", sprite: world.boxTitleContainer)
+      ..position.y = boxTextContainer.position.y - 35
+      ..position.x = -5;
+
+    continueIndicator = SvgComponent(
+      svg: world.continueIndicator,
+      size: Vector2(25, 25),
+      position: Vector2(570,85),
+    );
+
+    continueIndicator.add(OpacityEffect.by(0.4, InfiniteEffectController(ZigzagEffectController(period: 0.9))));
 
     textContainer = DialoguePerCharText(
       text: '',
       game: world.game,
       timePerChar: 0.05,
+      onComplete: (){
+        textContainer.add(continueIndicator);
+      },
     );
 
     forwardNextButtonComponent = ButtonComponent(
@@ -37,24 +53,29 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       size: world.game.size,
       onPressed: () async {
         if(!textContainer.finished){
-          remove(textContainer);
-          textContainer = DialoguePerCharText(
-            text: '${publicLine.character?.name ?? ''}: ${publicLine.text}', 
-            game: world.game,
-            timePerChar: 0
-          );
-          await add(textContainer);
+          await _showDialog(true, publicLine);
         }
         else {
           _forwardCompleter.complete();
         }
     });
 
-    addAll([bg, character1, boxTextContainer, forwardNextButtonComponent, textContainer]);
+    addAll([forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 2, textContainer]);
 
     return super.onLoad();
   }
 
+  @override
+  FutureOr<void> onNodeStart(Node node) async {
+    final bg = SpriteComponent(key: ComponentKey.named('bg'), sprite: await world.gameRef.loadSprite('bg/${node.tags["initBg"]}'));
+    String? audio = node.tags["initSound"];
+    if(audio != "none" && audio != null && !FlameAudio.bgm.isPlaying){
+      FlameAudio.bgm.play(audio);
+    }
+    bg.size = world.gameRef.size;
+    add(bg..priority = -1);
+    return super.onNodeStart(node);
+  }
 
   @override
   FutureOr<bool> onLineStart(DialogueLine line) async {
@@ -64,16 +85,57 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
     return super.onLineStart(line);
   }
 
-  Future<void> _advance(DialogueLine line) async{
-    final characterName = line.character?.name ?? '';
-    final dialogueLine = '$characterName: ${line.text}';
+  Future<void> _showDialog(bool skiped, DialogueLine line) async{
+    final String? characterName = line.character?.name;
+    final bool hasParent = boxTitleContainer.parent != null;
+
+    if(characterName != null && characterName.isNotEmpty){
+      if(!hasParent){
+        await add(boxTitleContainer..priority = 3);
+        boxTitleContainer.setTitle(characterName);
+      }
+      else{
+        boxTitleContainer.setTitle(characterName);
+      }
+    }
+    else{
+      if(hasParent){
+        remove(boxTitleContainer);
+      }
+    }
+
     remove(textContainer);
-    textContainer = DialoguePerCharText(
-      text: dialogueLine,
-      game: world.game,
-      timePerChar: 0.05,
-    );
+    if(skiped){
+      textContainer = DialoguePerCharText(
+        text: line.text, 
+        game: world.game,
+        timePerChar: 0,
+        onComplete: (){
+          textContainer.add(continueIndicator);
+        },
+      )..priority = 3;
+    }
+    else{
+      textContainer = DialoguePerCharText(
+        text: line.text,
+        game: world.game,
+        timePerChar: 0.05,
+        onComplete: (){
+          textContainer.add(continueIndicator);
+        },
+      )..priority = 3;
+    }
     await add(textContainer);
+  }
+
+  Future<void> _advance(DialogueLine line) async{
+
+    final tags = line.tags;
+    if(tags.isNotEmpty){
+      tagAction.executeTags(tags, children: children, line: line);
+    }
+    await _showDialog(false, line);
+
     return _forwardCompleter.future;
   }
 }
