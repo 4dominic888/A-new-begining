@@ -7,7 +7,7 @@ class DialoguePerCharText extends TextBoxComponent{
   final VisualNovel game;
   final double timePerChar;
 
-  DialoguePerCharText({required String text, required this.game, required this.timePerChar}) : super(
+  DialoguePerCharText({required String text, required this.game, required this.timePerChar, required super.onComplete}) : super(
     text: text,
     position: Vector2(100, game.size.y -115),
     textRenderer: TextPaint(style: const TextStyle(

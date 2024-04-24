@@ -3,6 +3,7 @@ import 'package:a_new_begin_again_vn/modules/dialog_system/components/scene_view
 import 'package:a_new_begin_again_vn/shared/fade_component.dart';
 import 'package:a_new_begin_again_vn/visual_novel.dart';
 import 'package:flame/components.dart';
+import 'package:flame_svg/flame_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jenny/jenny.dart';
@@ -11,6 +12,7 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
 
   late final Sprite boxTextContainer;
   late final Sprite boxTitleContainer;
+  late final Svg continueIndicator;
   YarnProject yarnProject = YarnProject();
   late final SceneViewComponent sceneViewComponent;
 
@@ -29,6 +31,7 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
 
     boxTextContainer = await gameRef.loadSprite('dialogs/default_dialog_container.png');
     boxTitleContainer = await gameRef.loadSprite('dialogs/default_dialog_title.png');
+    continueIndicator = await Svg.load('images/dialogs/continue_indicator.svg');
     sceneViewComponent = SceneViewComponent();
     String startDialog = await rootBundle.loadString('assets/yarn/start.yarn');
 

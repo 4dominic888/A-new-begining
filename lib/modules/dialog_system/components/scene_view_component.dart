@@ -5,12 +5,15 @@ import 'package:a_new_begin_again_vn/modules/dialog_system/components/box_title_
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/input.dart';
+import 'package:flame_svg/flame_svg.dart';
 import 'package:jenny/jenny.dart';
 
 class SceneViewComponent extends PositionComponent with DialogueView, HasWorldReference<ScreenDialog>{
   late SpriteComponent boxTextContainer;
   late BoxTitleContainer boxTitleContainer;
+  late SvgComponent continueIndicator;
   late final ButtonComponent forwardNextButtonComponent;
   Completer<void> _forwardCompleter = Completer();
   late DialoguePerCharText textContainer;
@@ -28,10 +31,21 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       ..position.y = boxTextContainer.position.y - 35
       ..position.x = -5;
 
+    continueIndicator = SvgComponent(
+      svg: world.continueIndicator,
+      size: Vector2(25, 25),
+      position: Vector2(570,85),
+    );
+
+    continueIndicator.add(OpacityEffect.by(0.4, InfiniteEffectController(ZigzagEffectController(period: 0.9))));
+
     textContainer = DialoguePerCharText(
       text: '',
       game: world.game,
-      timePerChar: 0.05
+      timePerChar: 0.05,
+      onComplete: (){
+        textContainer.add(continueIndicator);
+      },
     );
 
     forwardNextButtonComponent = ButtonComponent(
@@ -46,7 +60,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         }
     });
 
-    addAll([forwardNextButtonComponent, boxTextContainer..priority = 2, textContainer]);
+    addAll([forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 2, textContainer]);
 
     return super.onLoad();
   }
@@ -90,7 +104,10 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       textContainer = DialoguePerCharText(
         text: line.text, 
         game: world.game,
-        timePerChar: 0
+        timePerChar: 0,
+        onComplete: (){
+          textContainer.add(continueIndicator);
+        },
       )..priority = 3;
     }
     else{
@@ -98,6 +115,9 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         text: line.text,
         game: world.game,
         timePerChar: 0.05,
+        onComplete: (){
+          textContainer.add(continueIndicator);
+        },
       )..priority = 3;
     }
     await add(textContainer);
