@@ -86,9 +86,9 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
     final bool hasParent = boxTitleContainer.parent != null;
 
     if(characterName != null && characterName.isNotEmpty){
-      boxTitleContainer.title = characterName;
       if(!hasParent){
         await add(boxTitleContainer..priority = 3);
+        boxTitleContainer.setTitle(characterName);
       }
       else{
         boxTitleContainer.setTitle(characterName);

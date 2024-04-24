@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class BoxTitleContainer extends SpriteComponent{
 
   String? title;
-  late final TextComponent _textComponent;
+  late TextComponent _textComponent;
 
   BoxTitleContainer(this.title, {super.key, required super.sprite, super.position});
 
