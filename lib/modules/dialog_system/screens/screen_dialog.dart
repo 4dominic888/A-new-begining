@@ -3,6 +3,7 @@ import 'package:a_new_begin_again_vn/modules/dialog_system/components/scene_view
 import 'package:a_new_begin_again_vn/shared/fade_component.dart';
 import 'package:a_new_begin_again_vn/visual_novel.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,6 +62,24 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
 
       sceneViewComponent.add(character1);
       character1.priority = 0;
+    });
+
+    //* changeBg
+    yarnProject.commands.addCommand2("changueBg", (String transicion, String fileName) async {
+      final bgCom = sceneViewComponent.children.query<SpriteComponent>().firstWhere((e) => e.key == ComponentKey.named('bg'));
+      if(transicion == "sliding-curtain"){
+        final sizeX = gameRef.cam.viewport.virtualSize.x;
+        final RectangleComponent rec = RectangleComponent(
+          size: gameRef.cam.viewport.virtualSize,
+          paint: Paint()..color = Colors.black,
+          position: Vector2(gameRef.cam.viewport.virtualSize.x, 0)
+        );
+        gameRef.cam.viewport.add(rec);
+        rec.add(MoveByEffect(Vector2(-sizeX, 0), LinearEffectController(0.5), onComplete: () async {
+          bgCom.sprite = await gameRef.loadSprite('bg/cafeteria.jpg');
+          rec.add(MoveByEffect(Vector2(-sizeX, 0), LinearEffectController(0.5)));
+        }));
+      }
     });
 
   }
