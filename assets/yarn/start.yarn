@@ -1,17 +1,30 @@
 <<character Pepe>>
-<<character You>>
+<<character Tu>>
 title: mini_historia_fulbo
 tags:
 initBg: city-bg.jpg
 initCh: none
 ---
-Era una mañana tranquila y relajante, me habia despertado a las 9\:00 am, que dia más cansado.
-No tengo idea que hacer ahora, solo me puse a caminar por las calles sin rumbo, tal vez debería desayunar algo.
+Era una mañana tranquila y relajante, me había despertado a las 9\:00 am, que día más cansado.
+No tengo idea de que hacer ahora, solo me puse a caminar por las calles sin rumbo, tal vez debería desayunar algo.
 <<characterAppear "Pepe" "character_A" "png" "center">>
-De repente veo a Pepe a la vuelta de la esquina, al verme me mira con una cara asustada
+De repente veo a Pepe a la vuelta de la esquina, al verme me mira con una cara asustada.
 Pepe: Oe mano! te enteraste?? #surprise
-You: ¿Enterarme de que? ¿Ocurrió algo malo?
-Pepe: GOLEARON A LAS CHIVAS #scream
-You: NO PUEDE SER. #badFeel
+Tu: ¿Enterarme de que? ¿Ocurrió algo malo?
+Pepe: GOLEARON A LAS CHIVAS. #scream
+Tu: NO PUEDE SER. #badFeel
 Habian goleado a las chivas... mi equipo de futbol favorito.
+...
+<<changueBg "sliding-curtain" "cafeteria.jpg">>
+<<wait 1.5>>
+Tu: Como es que golearon a las chivas.
+Habiamos ido a una cafetería cercana a hablarlo con más calma.
+Pepe: Fue horrible... estabamos ganando y de repente los de nuestro equipo se webearon. #sad
+Pepe: 15-4.
+Tu: QUE.
+Pepe: Nos golearon bien feo, esto quedará marcado en la historia.
+Tu: Como es que metieron tantos goles, si solo es el America. De verdad viste bien??
+No podia creer lo que estaba escuchando, es que es exagerado, 15-4... COMO
+Pepe: Si vi bien mano, si quieres te paso la repetición del partido.
+Justo en ese momento, en la televisión se empezó a escuchar algo acerca de dicho partido.
 ===
