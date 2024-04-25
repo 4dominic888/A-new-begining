@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/box_title_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/choice_button.dart';
+import 'package:a_new_begin_again_vn/modules/dialog_system/components/forward_next_button_component.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/option_button.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
@@ -10,7 +11,6 @@ import 'package:a_new_begin_again_vn/modules/main_menu/screens/screen_main_menu.
 import 'package:a_new_begin_again_vn/shared/fade_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_svg/flame_svg.dart';
 import 'package:flutter/material.dart';
@@ -20,17 +20,20 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   late SpriteComponent boxTextContainer;
   late BoxTitleContainer boxTitleContainer;
   late SvgComponent continueIndicator;
-  late final ButtonComponent forwardNextButtonComponent;
+  late final ForwardNextButtonComponent forwardNextButtonComponent;
   Completer<void> _forwardCompleter = Completer();
   Completer<int> _choiceCompleter = Completer<int>();
   List<ChoiceButton> optionList = [];
   late DialoguePerCharText textContainer;
   late DialogueLine publicLine;
   late final TagAction tagAction;
+  bool isPress = false;
+  int _auxCounter = 0;
 
   @override
   FutureOr<void> onLoad() {
     tagAction = TagAction(this);
+
     boxTextContainer = SpriteComponent(sprite: world.boxTextContainer)
       ..position.y = 285;
 
@@ -80,8 +83,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       },
     );
 
-    forwardNextButtonComponent = ButtonComponent(
-      button: PositionComponent(),
+    forwardNextButtonComponent = ForwardNextButtonComponent(
       size: world.game.size,
       onPressed: () async {
         if(!textContainer.finished){
@@ -89,14 +91,29 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         }
         else {
           _forwardCompleter.complete();
-        }
+        }           
       },
-      
-      );
+      onReleased: () async {
+        isPress = false;
+        _auxCounter = 0;
+      },
+      onLongPressed: (){
+        isPress = true;
+      }
+    );
 
     addAll([buttonEsc..priority=6, forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 3, textContainer..priority = 4]);
 
     return super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    if(isPress && _auxCounter % 10 == 0 && !_forwardCompleter.isCompleted){
+      _forwardCompleter.complete();
+    }
+    _auxCounter++;
+    super.update(dt);
   }
 
   @override
@@ -129,6 +146,9 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
   @override
   FutureOr<int?> onChoiceStart(DialogueChoice choice) async {
+    isPress = false;
+    _auxCounter = 0;
+
     _choiceCompleter = Completer<int>();
     forwardNextButtonComponent.removeFromParent();
 
