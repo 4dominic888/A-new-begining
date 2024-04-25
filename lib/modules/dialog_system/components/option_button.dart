@@ -16,7 +16,7 @@ class OptionButton extends ButtonComponent {
 
     final iconComponent = SvgComponent(
       svg: svg,
-      size: size,
+      size: size * 1.4,
       anchor: Anchor.center,
       position: size,
     );
