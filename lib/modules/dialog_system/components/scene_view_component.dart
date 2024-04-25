@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/box_title_container.dart';
+import 'package:a_new_begin_again_vn/modules/dialog_system/components/option_button.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
+import 'package:a_new_begin_again_vn/modules/main_menu/screens/screen_main_menu.dart';
+import 'package:a_new_begin_again_vn/shared/fade_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_svg/flame_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:jenny/jenny.dart';
 
 class SceneViewComponent extends PositionComponent with DialogueView, HasWorldReference<ScreenDialog>{
@@ -39,6 +43,29 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
     continueIndicator.add(OpacityEffect.by(0.4, InfiniteEffectController(ZigzagEffectController(period: 0.9))));
 
+    final buttonEsc = OptionButton(
+      world.exitSvg,
+      position: Vector2(20, 20),
+      size: Vector2.all(30),
+      onReleased: (){
+        final camViewPort = world.gameRef.cam.viewport;
+        Future.delayed(const Duration(seconds: 1));
+        remove(forwardNextButtonComponent);
+        final FadeComponent fader = FadeComponent.initTransparentColor(
+          size: camViewPort.virtualSize,
+          color: Colors.black,
+          time: 1.9
+        );
+        camViewPort.add(fader);
+        fader.inEffect(() async{
+          final mainMenu = ScreenMainMenu(size: camViewPort.size);
+          world.gameRef.remove(world);
+          await world.gameRef.add(mainMenu);
+          world.gameRef.cam.world = mainMenu;
+          camViewPort.remove(fader);
+        });
+      });
+
     textContainer = DialoguePerCharText(
       text: '',
       game: world.game,
@@ -60,9 +87,15 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         }
     });
 
-    addAll([forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 2, textContainer]);
+    addAll([buttonEsc..priority=6, forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 2, textContainer]);
 
     return super.onLoad();
+  }
+
+  @override
+  void onRemove() {
+    FlameAudio.bgm.stop();
+    super.onRemove();
   }
 
   @override
@@ -70,7 +103,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
     final bg = SpriteComponent(key: ComponentKey.named('bg'), sprite: await world.gameRef.loadSprite('bg/${node.tags["initBg"]}'));
     String? audio = node.tags["initSound"];
     if(audio != "none" && audio != null && !FlameAudio.bgm.isPlaying){
-      FlameAudio.bgm.play(audio);
+      FlameAudio.bgm.play('songs/$audio');
     }
     bg.size = world.gameRef.size;
     add(bg..priority = -1);
