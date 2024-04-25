@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:a_new_begin_again_vn/modules/main_menu/screens/screen_main_menu.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
 class VisualNovel extends FlameGame{
@@ -11,6 +12,7 @@ class VisualNovel extends FlameGame{
 
   @override
   Future<void> onLoad() async {
+    FlameAudio.bgm.initialize();
     mainMenu = ScreenMainMenu(size: size);
 
     cam = CameraComponent.withFixedResolution(
@@ -21,6 +23,11 @@ class VisualNovel extends FlameGame{
     return super.onLoad();
   }
 
+  @override
+  void onDispose() {
+    FlameAudio.bgm.dispose();
+    super.onDispose();
+  }
 
   @override
   Color backgroundColor() {
