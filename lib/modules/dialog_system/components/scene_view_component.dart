@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/box_title_container.dart';
+import 'package:a_new_begin_again_vn/modules/dialog_system/components/choice_button.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/option_button.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
@@ -21,6 +22,8 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   late SvgComponent continueIndicator;
   late final ButtonComponent forwardNextButtonComponent;
   Completer<void> _forwardCompleter = Completer();
+  Completer<int> _choiceCompleter = Completer<int>();
+  List<ChoiceButton> optionList = [];
   late DialoguePerCharText textContainer;
   late DialogueLine publicLine;
   late final TagAction tagAction;
@@ -37,7 +40,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
     continueIndicator = SvgComponent(
       svg: world.continueIndicator,
-      size: Vector2(25, 25),
+      size: Vector2.all(25),
       position: Vector2(570,85),
     );
 
@@ -46,11 +49,13 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
     final buttonEsc = OptionButton(
       world.exitSvg,
       position: Vector2(20, 20),
-      size: Vector2.all(30),
+      size: Vector2.all(25),
       onReleased: (){
         final camViewPort = world.gameRef.cam.viewport;
         Future.delayed(const Duration(seconds: 1));
-        remove(forwardNextButtonComponent);
+        if(forwardNextButtonComponent.parent != null){
+          remove(forwardNextButtonComponent);
+        }
         final FadeComponent fader = FadeComponent.initTransparentColor(
           size: camViewPort.virtualSize,
           color: Colors.black,
@@ -85,9 +90,11 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         else {
           _forwardCompleter.complete();
         }
-    });
+      },
+      
+      );
 
-    addAll([buttonEsc..priority=6, forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 2, textContainer]);
+    addAll([buttonEsc..priority=6, forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 3, textContainer..priority = 4]);
 
     return super.onLoad();
   }
@@ -101,6 +108,8 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   @override
   FutureOr<void> onNodeStart(Node node) async {
     final bg = SpriteComponent(key: ComponentKey.named('bg'), sprite: await world.gameRef.loadSprite('bg/${node.tags["initBg"]}'));
+    world.bgCom = bg;
+
     String? audio = node.tags["initSound"];
     if(audio != "none" && audio != null && !FlameAudio.bgm.isPlaying){
       FlameAudio.bgm.play('songs/$audio');
@@ -116,6 +125,40 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
     publicLine = line;
     await _advance(line);
     return super.onLineStart(line);
+  }
+
+  @override
+  FutureOr<int?> onChoiceStart(DialogueChoice choice) async {
+    _choiceCompleter = Completer<int>();
+    forwardNextButtonComponent.removeFromParent();
+
+    textContainer.text = "...";
+    for (int i = 0; i < choice.options.length; i++) {
+      optionList.add(ChoiceButton(
+        choice.options[i].text,
+        size: Vector2(480, 45),
+        position: Vector2((world.gameRef.size.x / 2) -230, 60 + (70.0* i)),
+        onAction: () {
+          if(!_choiceCompleter.isCompleted){
+            _choiceCompleter.complete(i);
+          } 
+        }));
+    }
+    addAll(optionList);
+    await _getChoice(choice);
+    return _choiceCompleter.future;
+  }
+
+  @override
+  FutureOr<void> onChoiceFinish(DialogueOption option) {
+    removeAll(optionList);
+    optionList = [];
+    add(forwardNextButtonComponent);
+    return super.onChoiceFinish(option);
+  }  
+
+  Future<void> _getChoice(DialogueChoice choice) async {
+    return _forwardCompleter.future;
   }
 
   Future<void> _showDialog(bool skiped, DialogueLine line) async{
