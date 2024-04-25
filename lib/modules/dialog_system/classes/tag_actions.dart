@@ -15,7 +15,7 @@ class TagAction{
     "#scream": (ComponentSet children, DialogueLine line){
       FlameAudio.play('sfx/surprise.mp3');
       final shake = MoveEffect.by(Vector2(0,-3), InfiniteEffectController(ZigzagEffectController(period: 0.2)));
-      final chSpr = children.query<SpriteComponent>().firstWhere((element) => element.key == ComponentKey.named('ch_${line.character?.name}'));
+      final chSpr = children.query<SpriteComponent>().firstWhere((element) => element.firstChild()?.key == ComponentKey.named('ch_${line.character?.name}'));
       chSpr.add(shake);
       Future.delayed(const Duration(seconds: 1, milliseconds: 500)).then((value) => shake.pause());
     },
