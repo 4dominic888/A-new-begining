@@ -33,4 +33,6 @@ flutter:
     - assets/images/bg/
     - assets/images/characters/
     - assets/images/dialogs/
-    - assets/audio/
+    - assets/images/svg/
+    - assets/audio/sfx/
+    - assets/audio/songs/
