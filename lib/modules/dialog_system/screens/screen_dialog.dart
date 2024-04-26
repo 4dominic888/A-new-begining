@@ -16,6 +16,7 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
   late final Sprite boxTitleContainer;
   late final Svg exitSvg;
   late final Svg fastSave;
+  late final Svg fastLoad;
   late final Svg continueIndicator;
   late final SpriteComponent bgCom;
   YarnProject yarnProject = YarnProject();
@@ -38,6 +39,7 @@ class ScreenDialog extends World with HasGameRef<VisualNovel>{
     continueIndicator = await Svg.load('images/dialogs/continue_indicator.svg');
     exitSvg = await Svg.load('images/svg/exit.svg');
     fastSave = await Svg.load('images/svg/fast_save.svg');
+    fastLoad = await Svg.load('images/svg/fast_load.svg');
     sceneViewComponent = SceneViewComponent();
     String startDialog = await rootBundle.loadString('assets/yarn/start.yarn');
 
