@@ -1,3 +1,4 @@
+import 'package:a_new_begin_again_vn/shared/automatic_widget.dart';
 import 'package:a_new_begin_again_vn/visual_novel.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
@@ -14,9 +15,14 @@ Future<void> main() async {
     debugShowCheckedModeBanner: false,
     home: Scaffold(
       body: Stack(
-        children: [
-          GameWidget(game: game)
-        ],
+        children: [GameWidget(
+          game: game,
+          overlayBuilderMap: {'fastLoadSucess': (BuildContext context, VisualNovel game) {
+            return AutomaticWidget(func: (){
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Guardado rápido exitoso")));
+            });
+          }}
+        )],
       ),
     ),
   ));

@@ -49,6 +49,16 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
     continueIndicator.add(OpacityEffect.by(0.4, InfiniteEffectController(ZigzagEffectController(period: 0.9))));
 
+    final buttonFastSave = OptionButton(
+      world.fastSave,
+      position: Vector2(80, 20),
+      size: Vector2.all(25),
+      onReleased: (){
+        world.gameRef.overlays.add('fastLoadSucess');
+        Future.delayed(const Duration(seconds: 4, milliseconds: 600)).then((value) => world.gameRef.overlays.remove('fastLoadSucess'));
+      }
+    );
+
     final buttonEsc = OptionButton(
       world.exitSvg,
       position: Vector2(20, 20),
@@ -102,7 +112,14 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       }
     );
 
-    addAll([buttonEsc..priority=6, forwardNextButtonComponent, continueIndicator, boxTextContainer..priority = 3, textContainer..priority = 4]);
+    addAll([
+      buttonEsc..priority=6,
+      buttonFastSave..priority=6,
+      forwardNextButtonComponent,
+      continueIndicator,
+      boxTextContainer..priority = 3,
+      textContainer..priority = 4
+    ]);
 
     return super.onLoad();
   }
