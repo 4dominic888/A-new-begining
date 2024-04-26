@@ -1,30 +1,26 @@
 import 'dart:async';
 
 import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
-import 'package:a_new_begin_again_vn/modules/dialog_system/components/box_title_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/choice_button.dart';
+import 'package:a_new_begin_again_vn/modules/dialog_system/components/dialog_component.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/forward_next_button_component.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/option_button.dart';
-import 'package:a_new_begin_again_vn/modules/dialog_system/components/text_container.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/screens/screen_dialog.dart';
 import 'package:a_new_begin_again_vn/modules/main_menu/screens/screen_main_menu.dart';
 import 'package:a_new_begin_again_vn/shared/fade_component.dart';
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:flame_svg/flame_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:jenny/jenny.dart';
 
 class SceneViewComponent extends PositionComponent with DialogueView, HasWorldReference<ScreenDialog>{
-  late SpriteComponent boxTextContainer;
-  late BoxTitleContainer boxTitleContainer;
-  late SvgComponent continueIndicator;
+
+  late DialogComponent dialog;
   late final ForwardNextButtonComponent forwardNextButtonComponent;
   Completer<void> _forwardCompleter = Completer();
   Completer<int> _choiceCompleter = Completer<int>();
   List<ChoiceButton> optionList = [];
-  late DialoguePerCharText textContainer;
+
   late DialogueLine publicLine;
   late final TagAction tagAction;
   bool isPress = false;
@@ -34,20 +30,12 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
   FutureOr<void> onLoad() {
     tagAction = TagAction(this);
 
-    boxTextContainer = SpriteComponent(sprite: world.boxTextContainer)
-      ..position.y = 285;
-
-    boxTitleContainer = BoxTitleContainer(key: ComponentKey.named("boxTitle"), "", sprite: world.boxTitleContainer)
-      ..position.y = boxTextContainer.position.y - 35
-      ..position.x = -5;
-
-    continueIndicator = SvgComponent(
-      svg: world.continueIndicator,
-      size: Vector2.all(25),
-      position: Vector2(570,85),
+    dialog = DialogComponent(
+      boxTextSprite: world.boxTextContainer,
+      boxTitleSprite: world.boxTitleContainer,
+      continueSvg: world.continueIndicator,
+      sizeWorld: world.gameRef.size
     );
-
-    continueIndicator.add(OpacityEffect.by(0.4, InfiniteEffectController(ZigzagEffectController(period: 0.9))));
 
     final buttonFastSave = OptionButton(
       world.fastSave,
@@ -84,19 +72,10 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         });
       });
 
-    textContainer = DialoguePerCharText(
-      text: '',
-      game: world.game,
-      timePerChar: 0.05,
-      onComplete: (){
-        textContainer.add(continueIndicator);
-      },
-    );
-
     forwardNextButtonComponent = ForwardNextButtonComponent(
       size: world.game.size,
       onPressed: () async {
-        if(!textContainer.finished){
+        if(!dialog.boxTextContainer.textContainer.finished){
           await _showDialog(true, publicLine);
         }
         else {
@@ -116,9 +95,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       buttonEsc..priority=6,
       buttonFastSave..priority=6,
       forwardNextButtonComponent,
-      continueIndicator,
-      boxTextContainer..priority = 3,
-      textContainer..priority = 4
+      dialog..priority = 3
     ]);
 
     return super.onLoad();
@@ -169,7 +146,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
     _choiceCompleter = Completer<int>();
     forwardNextButtonComponent.removeFromParent();
 
-    textContainer.text = "...";
+    dialog.boxTextContainer.textContainer.text = "...";
     for (int i = 0; i < choice.options.length; i++) {
       optionList.add(ChoiceButton(
         choice.options[i].text,
@@ -200,45 +177,9 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
   Future<void> _showDialog(bool skiped, DialogueLine line) async{
     final String? characterName = line.character?.name;
-    final bool hasParent = boxTitleContainer.parent != null;
-
-    if(characterName != null && characterName.isNotEmpty){
-      if(!hasParent){
-        await add(boxTitleContainer..priority = 3);
-        boxTitleContainer.setTitle(characterName);
-      }
-      else{
-        boxTitleContainer.setTitle(characterName);
-      }
-    }
-    else{
-      if(hasParent){
-        remove(boxTitleContainer);
-      }
-    }
-
-    remove(textContainer);
-    if(skiped){
-      textContainer = DialoguePerCharText(
-        text: line.text, 
-        game: world.game,
-        timePerChar: 0,
-        onComplete: (){
-          textContainer.add(continueIndicator);
-        },
-      )..priority = 3;
-    }
-    else{
-      textContainer = DialoguePerCharText(
-        text: line.text,
-        game: world.game,
-        timePerChar: 0.05,
-        onComplete: (){
-          textContainer.add(continueIndicator);
-        },
-      )..priority = 3;
-    }
-    await add(textContainer);
+    final bool hasContent = characterName != null && characterName.isNotEmpty;
+    await dialog.regenerateTitle(hasContent, characterName);
+    await dialog.boxTextContainer.regenerateText(line.text, skiped, 0.05);
   }
 
   Future<void> _advance(DialogueLine line) async{
