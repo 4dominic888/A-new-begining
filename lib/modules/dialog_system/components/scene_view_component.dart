@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:a_new_begin_again_vn/modules/dialog_system/classes/tag_actions.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/choice_button.dart';
 import 'package:a_new_begin_again_vn/modules/dialog_system/components/dialog_component.dart';
@@ -37,6 +36,7 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
       sizeWorld: world.gameRef.size
     );
 
+    /*
     final buttonFastSave = OptionButton(
       world.fastSave,
       position: Vector2(80, 20),
@@ -46,6 +46,16 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
         Future.delayed(const Duration(seconds: 4, milliseconds: 600)).then((value) => world.gameRef.overlays.remove('fastLoadSucess'));
       }
     );
+
+    final buttonFastLoad = OptionButton(
+      world.fastLoad,
+      position: Vector2(150, 20),
+      size: Vector2.all(15),
+      onReleased: (){
+
+      }
+    );
+    */
 
     final buttonEsc = OptionButton(
       world.exitSvg,
@@ -93,7 +103,9 @@ class SceneViewComponent extends PositionComponent with DialogueView, HasWorldRe
 
     addAll([
       buttonEsc..priority=6,
-      buttonFastSave..priority=6,
+      //TODO: Activar cuando el nuevo sistema de dialogo esté finalizado
+      //buttonFastSave..priority=6,
+      //buttonFastLoad..priority=6,
       forwardNextButtonComponent,
       dialog..priority = 3
     ]);
